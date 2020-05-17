@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.Objects;
 
 
-public class SignUp extends AppCompatActivity implements View.OnClickListener {
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
      Button singUpButton;
      EditText usernameEditText, fullNameEditText;
@@ -51,7 +51,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
         if(mAuth.getCurrentUser()!=null){
             finish();
-            startActivity(new Intent(this, Home.class));
+            startActivity(new Intent(this, HomeActivity.class));
         }
 
 

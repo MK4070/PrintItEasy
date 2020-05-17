@@ -2,9 +2,9 @@
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#323131</color>
-    <color name="colorAccent">#4C4A4A</color>
+    <color name="colorAccent">#ff0000</color>
     <color name="bgColor">#323131</color>
     <color name="textColor">#FFFFFF</color>
     <color name="boxColor">#4C4A4A</color>
-    <color name="unselectedIcon">#BABABA</color>
+    <color name="unselectedIcon">#DFDFDF</color>
 </resources>

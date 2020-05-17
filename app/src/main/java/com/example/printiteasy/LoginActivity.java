@@ -53,12 +53,19 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        //////////////////////
+        if(mAuth.getCurrentUser()!=null){
+            finish();
+            startActivity(new Intent(this, HomeActivity.class));
+        }
+        //////////////////////
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+        /*mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (mUser != null) {
-                    Intent intent = new Intent(LoginActivity.this, Home.class);
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
 
@@ -66,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "AuthStateChanged:Logout");
                 }
             }
-        };
+        };*/
 
 
 
@@ -79,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         singUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, SignUp.class);
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
@@ -137,9 +144,11 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             emailEditText.getText().clear();
             passwordEditText.getText().clear();
-            Intent intent = new Intent(LoginActivity.this, Home.class);
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             intent.putExtra(userEmail,email);
             startActivity(intent);
+            //***************//
+            finish();
 
         }
     }

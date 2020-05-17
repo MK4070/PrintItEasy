@@ -29,13 +29,21 @@
     <string name="logOut">Logout</string>
     <string name="shops">Shops</string>
     <string name="shopName">ShopName_1</string>
-    <string name="shopName2">ShopName_2</string>
-    <string name="shopName3">ShopName_3</string>
     <string name="shopPhoto">ShopPhoto</string>
-    <string name="colorRate">Color : </string>
-    <string name="bwRate">Black and White : </string>
-    <string name="address1">Address : Central Library,MNNIT</string>
+    <string name="Rate">Rate : </string>
+    <string name="bAndW">B &amp; W:</string>
+    <string name="Color">Color:</string>
+    <string name="address1">Central Library,MNNIT</string>
     <string name="address2">Address : </string>
+    <string name="upload">Select File</string>
+    <string name="bw">Black &amp; White</string>
+    <string name="color">Color</string>
+    <string name="noc">No. of Copies :</string>
+    <string name="estimate">Estimated Cost :</string>
+    <string name="other">Other Description …</string>
+    <string name="submit">Submit</string>
+    <string name="perSheet">/sheet</string>
+
 
 </resources>
 
