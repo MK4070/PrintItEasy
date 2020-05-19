@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,7 +34,8 @@ import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-     Button singUpButton;
+    private static final String TAG = "SignUpActivity";
+    Button singUpButton;
      EditText usernameEditText, fullNameEditText;
      EditText passwordEditText;
      TextView loginTv;
@@ -107,6 +110,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()){
                     sendEmailVerification();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    if (user!=null){
+                        saveUserName();
+                    }
                     OnAuth(Objects.requireNonNull(task.getResult().getUser()));//********************
                     mAuth.signOut();
 
@@ -120,7 +127,23 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
 
 
+
     }
+
+    private void saveUserName() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
+
+       if (user!=null){ user.updateProfile(profile).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    Log.d(TAG, "onComplete: FullName saved "+getDisplayName());
+
+                }            }
+        });}
+    }
+
     private void sendEmailVerification(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null){
@@ -132,6 +155,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         FirebaseAuth.getInstance().signOut();
                     }                }
             });
+
         }
     }
 
@@ -153,7 +177,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private void createAnewUser(String uid) {
          User user = BuildNewUser();
-        mDatabase.child(uid).setValue(user);
+         mDatabase.child(uid).setValue(user);
+
     }
 
 

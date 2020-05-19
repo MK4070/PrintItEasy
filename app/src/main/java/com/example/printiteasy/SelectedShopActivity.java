@@ -1,6 +1,4 @@
 package com.example.printiteasy;
-
-//import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,52 +8,39 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
-
-//import static java.lang.Integer.parseInt;
-
 public class SelectedShopActivity extends AppCompatActivity implements View.OnClickListener{
+
 
     private Uri filepath;
     ProgressBar progressBar;
     private StorageReference mStorageRef;
     private static final String TAG = "SelectedShopActivity";
-    private static final int PICK_IMAGE_REQUEST = 23;
+    private static final int PICK_FILE_REQUEST = 23;
     Button selectFile,submit;
     EditText noOfCopies,otherDescription;
     RadioButton bw, color;
-    TextView estimatedCost;
-    /*int state = 0;*/
-    String noc,rate;
-    //private ArrayList<Source> mSource;
-    private ArrayList rateBlack, rateColor;
+    String shop, uri1, strOther, noc,userID;
+    FirebaseDatabase database;
+    FirebaseUser mUser;
 
-    public ArrayList getRateBlack() {
-        return rateBlack;
-    }
 
-    public ArrayList getRateColor() {
-        return rateColor;
-    }
-    /*public SelectedShopActivity(ArrayList<Source> mSource) {
-        this.mSource = mSource;
-    }*/
 
-    //@SuppressLint("SetTextI18n")
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,75 +51,137 @@ public class SelectedShopActivity extends AppCompatActivity implements View.OnCl
         otherDescription = findViewById(R.id.otherDescription);
         bw = findViewById(R.id.checkBoxBw);
         color = findViewById(R.id.checkBoxColor);
-        estimatedCost = findViewById(R.id.estimatedCost);
         progressBar = findViewById(R.id.progressHorizontal);
 
+
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        database = FirebaseDatabase.getInstance();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        //DatabaseReference mRefPreference = database.getReference("users/Preference");
+        userID = mUser.getDisplayName();
+        Log.d(TAG, "onCreate: displayName="+mUser.getDisplayName());
+
+
+
+
+
 
         Log.d(TAG, "onCreate: Variables initialised");
 
         selectFile.setOnClickListener(this);
         submit.setOnClickListener(this);
-        Log.d(TAG, "onCreate: button clicked");
+
+
+
+        //to know which shop was selected
+        Bundle extras = getIntent().getExtras();
+        assert extras != null;
+        shop = extras.getString("name");
+        Log.d(TAG, "onCreate: shop value received ="+shop);
 
 
 
 
-        Log.d(TAG, "onCreate: rate extracted");
-        //estimatedCost.setText(Integer.toString(computeCost()));
-        Log.d(TAG, "onCreate: cost computed");
+
     }
 
-    private void showFileChooser(){
+    private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent,"Select file"),PICK_IMAGE_REQUEST);
-    }
+        startActivityForResult(Intent.createChooser(intent, "Select file"), PICK_FILE_REQUEST);
+        }
+
 
     private void uploadFile(){
 
         if(filepath!=null) {
+            Log.d(TAG, "uploadFile: file selected");
+            if (!shop.matches("Saraswati Gate, MNNIT")){
+                progressBar.setVisibility(View.VISIBLE);
 
-            progressBar.setVisibility(View.VISIBLE);
+                final StorageReference imageRef = mStorageRef.child("/shop1/images/img.jpg");
 
-            StorageReference riversRef = mStorageRef.child("shop1/images/rivers.jpg");
 
-            riversRef.putFile(filepath)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(SelectedShopActivity.this, "File Uploaded", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(SelectedShopActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                           // double progress = (100.0* taskSnapshot.getBytesTransferred())/taskSnapshot.getTotalByteCount();
-                        }
-                    })
+                imageRef.putFile(filepath)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(SelectedShopActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
+                                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        uri1 = uri.toString();
+                                        Log.d(TAG, "onSuccess: download url generated");
+                                        DatabaseReference mRefDownload = database.getReference("users/DownloadURLs");
+                                        mRefDownload.push().setValue(uri1);
 
-            ;
-        }else{
+                                    }
+                                });
+
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(SelectedShopActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+
+                ;
+            }else if(shop.matches("Saraswati Gate, MNNIT")){
+                progressBar.setVisibility(View.VISIBLE);
+
+                final StorageReference imageRef = mStorageRef.child("shop2/images/img.jpg");
+
+                imageRef.putFile(filepath)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(SelectedShopActivity.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
+                                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        uri1 = uri.toString();
+                                        Log.d(TAG, "onSuccess: download url generated");
+                                        DatabaseReference mRefDownload = database.getReference("users/DownloadURLs");
+                                        mRefDownload.push().setValue(uri1);
+                                    }
+                                });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                progressBar.setVisibility(View.GONE);
+                                Toast.makeText(SelectedShopActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+
+                ;
+            }
+            }
+        else{
+            Toast.makeText(this, "Select a File", Toast.LENGTH_SHORT).show();
 
         }
+
+
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+        if (requestCode == PICK_FILE_REQUEST && resultCode==RESULT_OK && data!=null && data.getData()!=null){
             filepath = data.getData();
-            Toast.makeText(this, "Image Selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "File Selected", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -145,16 +192,33 @@ public class SelectedShopActivity extends AppCompatActivity implements View.OnCl
 
         }
         else if (v==submit){
+            noc = noOfCopies.getText().toString().trim();
+            strOther = otherDescription.getText().toString().trim();
+            DatabaseReference mRefPreference = database.getReference("users/Preferences/");
+            Log.d(TAG, "onCreate: noc="+noc);
+
+            Log.d(TAG, "onClick: strOther ="+strOther);
+            if (!shop.matches("Saraswati Gate, MNNIT")){
+                //shop1
+                if (color.isChecked()){
+                    mRefPreference.setValue("Shop1 "+"Color"+"  "+noc+"  "+strOther);
+                }else{
+                    mRefPreference.setValue("Shop1 "+"B&W"+"  "+noc+"  "+strOther);
+                }
+            }else if (shop.matches("Saraswati Gate, MNNIT")){
+                //shop2
+                if (color.isChecked()){
+                    mRefPreference.setValue("Shop2 "+"Color  "+noc+"  "+strOther);
+                }else{
+                    mRefPreference.setValue("Shop2 "+"B&W  "+noc+"  "+strOther);
+                }
+            }
+
+
             uploadFile();
+
+
+
         }
     }
-
-
-
-    /*private int computeCost(){
-        noc = noOfCopies.getText().toString().trim();
-        return parseInt(noc)*parseInt(rate);
-
-
-    }*/
 }

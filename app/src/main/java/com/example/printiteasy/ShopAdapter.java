@@ -1,11 +1,15 @@
 package com.example.printiteasy;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,7 +17,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
     private List<Source> mSource;
     //**********?/
-
+    Context context;
     //////////////
     private OnNoteListener mOnNoteListener;
 
@@ -42,8 +46,11 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
         textView3.setText(source.getRateColor());
         TextView textView4 = viewHolder.addressTextView;
         textView4.setText(source.getAddress());
+        ///////////////
 
-
+        Intent intent = new Intent("shopName");
+        intent.putExtra("name",source.getAddress());
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     @Override
@@ -57,7 +64,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
 
         TextView shopNameTextView, rateBlackTextView, rateColorTextView,addressTextView;
         ///////////////
-        String str;
         //***********//
         OnNoteListener onNoteListener;
 
@@ -68,7 +74,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ViewHolder> {
              rateColorTextView = itemView.findViewById(R.id.printRatesColor);
              addressTextView = itemView.findViewById(R.id.address);
              //********//
-            str = shopNameTextView.getText().toString().trim();
             /////////////
             this.onNoteListener = onNoteListener;
 

@@ -68,17 +68,6 @@
         android:text="@string/noc"
         android:textColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/estimatedCostText"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_below="@+id/noc"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:text="@string/estimate"
-        android:textColor="@color/textColor" />
-
     <EditText
         android:id="@+id/otherDescription"
         android:layout_width="300dp"
@@ -100,6 +89,7 @@
         android:textColorHint="@color/bgColor" />
 
     <RadioGroup
+        android:id="@+id/choice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -112,6 +102,7 @@
 
         <RadioButton
             android:id="@+id/checkBoxBw"
+            android:checked="true"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:buttonTint="@color/textColor" />
@@ -132,26 +123,12 @@
         android:layout_marginStart="20dp"
         android:layout_below="@id/bwText"
         android:layout_marginTop="20dp"
-        android:autofillHints=""
+        android:importantForAutofill="no"
         android:background="@color/unselectedIcon"
         android:ems="10"
-        android:inputType="number"
         android:labelFor="@id/editTextNoc"
         android:paddingStart="5dp"
         android:paddingEnd="5dp" />
-
-    <TextView
-        android:id="@+id/estimatedCost"
-        android:layout_width="40dp"
-        android:layout_height="32dp"
-        android:layout_below="@id/noc"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_toEndOf="@id/noc"
-        android:background="@color/unselectedIcon"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:text="" />
 
     <Button
         android:id="@+id/submitButton"
