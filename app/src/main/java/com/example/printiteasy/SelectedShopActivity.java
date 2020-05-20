@@ -74,10 +74,13 @@ public class SelectedShopActivity extends AppCompatActivity implements View.OnCl
 
 
         //to know which shop was selected
+        //working?
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         shop = extras.getString("name");
-        Log.d(TAG, "onCreate: shop value received ="+shop);
+        
+        
+        //Log.d(TAG, "onCreate: shop value received ="+shop);
 
 
 
